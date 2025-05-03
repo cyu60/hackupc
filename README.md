@@ -36,8 +36,8 @@ The primary objective of this project is to create a **digital twin** of a Seat 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/seat-car-digital-twin.git --recursive
-   cd seat-car-digital-twin
+   git clone git@github.com:cyu60/hackupc.git --recursive
+   cd hackupc
    ```
 
 2. Set up the environment:
@@ -64,6 +64,158 @@ To render a trained model:
 ```bash
 python render.py --model_path <path_to_model>
 ```
+
+## Training Models for Car Digital Twins
+
+This section provides detailed instructions on how to train NeRF and Gaussian Splatting models using the downloaded repositories.
+
+### Preparing Your Data
+
+Before training, you'll need a set of images of the car from multiple viewpoints:
+
+1. **Capture Requirements**:
+   - Consistent lighting conditions
+   - Overlap between images (30-50%)
+   - Coverage of all areas you want to reconstruct
+
+2. **Data Organization**:
+   - For NeRF: Place your images in a folder structure as per LLFF format
+   - For Gaussian Splatting: Follow the COLMAP dataset structure
+
+### Training with Gaussian Splatting
+
+Gaussian Splatting generally provides faster training and real-time rendering capabilities, making it ideal for interactive applications.
+
+#### Data Processing with COLMAP
+
+First, convert your raw images to the required format:
+
+```bash
+cd gaussian-splatting-main
+python convert.py -s /path/to/your/car/images --resize
+```
+
+This script:
+- Runs COLMAP to extract camera poses
+- Undistorts images
+- Creates the necessary folder structure
+
+#### Training Process
+
+```bash
+python train.py -s /path/to/processed/car/data
+```
+
+Advanced options for better results:
+
+```bash
+# For high-quality results
+python train.py -s /path/to/processed/car/data --iterations 30000 --resolution 2
+
+# For real-time optimization
+python train.py -s /path/to/processed/car/data --iterations 15000 --resolution 1 --position_lr_init 0.00016
+```
+
+#### Monitoring Training Progress
+
+You can monitor the training progress using the provided network viewer:
+
+```bash
+cd SIBR_viewers/bin
+./SIBR_remoteGaussian_app
+```
+
+This allows you to see the 3D model as it's being trained.
+
+### Training with NeRF
+
+NeRF may provide higher quality results for complex lighting conditions but requires more training time and is slower to render.
+
+#### Preparing NeRF Data
+
+For LLFF-format data (real captured images):
+
+```bash
+cd nerf-master
+python imgs2poses.py /path/to/your/car/images
+```
+
+#### Training NeRF Model
+
+Create a configuration file for your dataset (similar to config_fern.txt):
+
+```bash
+cd nerf-master
+# Example configuration file creation
+echo "expname = seat_car
+datadir = /path/to/car/data
+dataset_type = llff
+no_batching = True
+use_viewdirs = True
+white_bkgd = False
+N_samples = 64
+N_importance = 128
+llffhold = 8" > config_seat_car.txt
+
+# Run training
+python run_nerf.py --config config_seat_car.txt
+```
+
+For best results:
+- Train for at least 200,000 iterations (may take 15+ hours on a single GPU)
+- Use `tensorboard --logdir=logs/summaries` to monitor training progress
+- Final model and renderings will be saved in the `logs/[expname]` directory
+
+### Tips for Car Digital Twins
+
+1. **Interior Scans**: 
+   - Use Gaussian Splatting with depth regularization for better results
+   ```bash
+   python train.py -s /path/to/data -d /path/to/depth_maps --depth_sil_weight 0.1
+   ```
+
+2. **Glossy Surfaces**:
+   - Lower learning rates can help with reflective surfaces
+   ```bash
+   python train.py -s /path/to/data --position_lr_init 0.000016 --scaling_lr 0.001
+   ```
+
+3. **Exposure Variations**:
+   - Enable exposure compensation for outdoor captures:
+   ```bash
+   python train.py -s /path/to/data --exposure_lr_init 0.001 --exposure_lr_final 0.0001
+   ```
+
+4. **Multi-View Consistency**:
+   - Add anti-aliasing for better results across viewpoints:
+   ```bash
+   python train.py -s /path/to/data --antialiasing
+   ```
+
+### Rendering and Viewing
+
+After training, you can render your model or view it interactively:
+
+#### Gaussian Splatting Viewer
+
+```bash
+cd SIBR_viewers/bin
+./SIBR_gaussianViewer_app -m /path/to/trained/model
+```
+
+#### NeRF Rendering
+
+```bash
+cd nerf-master
+python run_nerf.py --config config_seat_car.txt --render_only
+```
+
+Rendered images and videos will be saved in the output directory.
+
+## Repository
+
+This project is hosted on GitHub. You can find the repository here:
+[Seat Car Digital Twin Repository](https://github.com/cyu60/hackupc)
 
 ## Acknowledgments
 
