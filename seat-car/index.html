@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SEET Car Model Experience</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+    />
+    <style id="app-style">
+      :root {
+        --primary-color: #3a86ff;
+        --secondary-color: #ff006e;
+        --dark-bg: #121212;
+        --dark-surface: #1e1e1e;
+        --dark-text: #f1f1f1;
+        --light-bg: #ffffff;
+        --light-surface: #f5f5f5;
+        --light-text: #212121;
+        --transition-speed: 0.3s;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        transition: background-color var(--transition-speed),
+          color var(--transition-speed);
+        margin: 0;
+        padding: 0;
+        background-color: var(--light-bg);
+        color: var(--light-text);
+      }
+
+      body.dark-mode {
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+      }
+
+      .theme-toggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        border: none;
+        color: var(--light-text);
+        font-size: 1.2rem;
+      }
+
+      body.dark-mode .theme-toggle {
+        color: var(--dark-text);
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .loader-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--light-bg);
+        z-index: 9999;
+        transition: opacity 0.5s;
+      }
+
+      body.dark-mode .loader-container {
+        background-color: var(--dark-bg);
+      }
+
+      .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid var(--primary-color);
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        animation: rotation 1s linear infinite;
+      }
+
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .car-viewer-container {
+        position: relative;
+        width: 100%;
+        height: 50vh;
+        min-height: 300px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #111, #333);
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .spline-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: none; /* Initially hidden */
+      }
+
+      .cover-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .visualize-btn {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 10;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .visualize-btn:hover {
+        transform: translateX(-50%) translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+      }
+
+      .car-info {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+
+      .car-name {
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-top: 1rem;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      .car-tagline {
+        font-weight: 300;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.8;
+      }
+
+      .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .spec-card {
+        background-color: var(--light-surface);
+        border-radius: 15px;
+        padding: 1.2rem;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      body.dark-mode .spec-card {
+        background-color: var(--dark-surface);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .spec-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      body.dark-mode .spec-card:hover {
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .spec-value {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0.5rem 0;
+        color: var(--primary-color);
+      }
+
+      .spec-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+
+      .detail-card {
+        background-color: var(--light-surface);
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        transition: box-shadow 0.3s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      body.dark-mode .detail-card {
+        background-color: var(--dark-surface);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .detail-header {
+        padding: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .detail-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin: 0;
+      }
+
+      .detail-icon {
+        transition: transform 0.3s;
+      }
+
+      .detail-card.active .detail-icon {
+        transform: rotate(180deg);
+      }
+
+      .detail-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease;
+      }
+
+      .detail-card.active .detail-content {
+        max-height: 1000px;
+      }
+
+      .detail-body {
+        padding: 0 1.2rem 1.2rem;
+      }
+
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      body.dark-mode .comparison-table th,
+      body.dark-mode .comparison-table td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .comparison-table th {
+        font-weight: 500;
+        opacity: 0.7;
+      }
+
+      .comparison-table-container {
+        margin: 2rem 0;
+        overflow-x: auto;
+        background-color: var(--light-surface);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      body.dark-mode .comparison-table-container {
+        background-color: var(--dark-surface);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .table-footnote {
+        font-size: 0.85rem;
+        font-style: italic;
+        margin-top: 1rem;
+        opacity: 0.7;
+      }
+
+      .takeaways-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin-top: 1.5rem;
+      }
+
+      .takeaways-list li {
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.75rem;
+        background-color: var(--light-surface);
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      body.dark-mode .takeaways-list li {
+        background-color: var(--dark-surface);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      #compare h3.section-title {
+        margin-top: 2.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .comparison-table th,
+        .comparison-table td {
+          padding: 0.5rem;
+          font-size: 0.9rem;
+        }
+
+        .takeaways-list li {
+          padding: 0.6rem 0.8rem;
+          font-size: 0.95rem;
+        }
+      }
+
+      .better {
+        color: #10b981;
+      }
+
+      .worse {
+        color: #ef4444;
+      }
+
+      .sticky-nav {
+        position: sticky;
+        top: 0;
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        z-index: 100;
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
+        transition: background-color var(--transition-speed);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      body.dark-mode .sticky-nav {
+        background-color: rgba(18, 18, 18, 0.9);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .nav-link {
+        text-decoration: none;
+        color: var(--light-text);
+        font-weight: 500;
+        padding: 0.5rem 0;
+        position: relative;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+      }
+
+      body.dark-mode .nav-link {
+        color: var(--dark-text);
+      }
+
+      .nav-link:hover {
+        opacity: 1;
+      }
+
+      .nav-link.active {
+        opacity: 1;
+      }
+
+      .nav-link.active::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        border-radius: 3px;
+      }
+
+      body.dark-mode .nav-link.active::after {
+        background: linear-gradient(90deg, #3a86ff, #ff006e);
+      }
+
+      .error-container {
+        display: none;
+        background-color: #fff5f5;
+        border-left: 4px solid #f56565;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 4px;
+      }
+
+      body.dark-mode .error-container {
+        background-color: #3b1818;
+        border-left: 4px solid #f56565;
+      }
+
+      .error-message {
+        color: #c53030;
+        margin-bottom: 0.5rem;
+      }
+
+      body.dark-mode .error-message {
+        color: #fc8181;
+      }
+
+      .reload-btn {
+        background-color: #f56565;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+
+      .reload-btn:hover {
+        background-color: #e53e3e;
+      }
+
+      @media (max-width: 768px) {
+        .car-name {
+          font-size: 2rem;
+        }
+
+        .car-tagline {
+          font-size: 1rem;
+        }
+
+        .car-viewer-container {
+          height: 40vh;
+        }
+
+        .specs-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .comparison-table {
+          font-size: 0.9rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .spec-value {
+          font-size: 1.5rem;
+        }
+
+        .car-name {
+          font-size: 1.8rem;
+        }
+
+        .nav-links {
+          gap: 1rem;
+        }
+      }
+
+      .section {
+        padding-top: 2rem;
+        scroll-margin-top: 80px;
+      }
+
+      .section-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        display: inline-block;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        border-radius: 3px;
+      }
+
+      .manual-ref {
+        font-size: 0.85rem;
+        font-style: italic;
+        color: var(--primary-color);
+        margin-top: 0.5rem;
+        opacity: 0.8;
+      }
+
+      body.dark-mode .manual-ref {
+        opacity: 0.7;
+      }
+
+      .detail-specs {
+        margin-top: 1.5rem;
+      }
+
+      .visualize-form {
+        margin: 1.5rem 0 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+      }
+
+      .location-input-group {
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .location-input {
+        width: 100%;
+        padding: 0.85rem 1.2rem;
+        padding-right: 140px; /* Increased to give more room for the button */
+        border-radius: 30px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: border-color 0.3s, background-color 0.3s;
+        background-color: rgba(30, 30, 30, 0.7);
+        color: var(--dark-text);
+        backdrop-filter: blur(10px);
+      }
+
+      .location-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .location-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        background-color: rgba(40, 40, 40, 0.8);
+      }
+
+      .generate-btn {
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .generate-btn:hover {
+        transform: translateY(-50%) scale(1.02);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .visualization-result {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 2rem;
+      }
+
+      .location-image {
+        max-width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        display: none;
+        width: 100%;
+        max-width: 800px;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s ease-in-out infinite;
+        margin: 2rem auto;
+        display: none;
+      }
+
+      body.dark-mode .spinner {
+        border-color: rgba(255, 255, 255, 0.1);
+        border-top-color: var(--primary-color);
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error-message {
+        color: #e53e3e;
+        margin-top: 1rem;
+        text-align: center;
+        display: none;
+      }
+
+      body.dark-mode .error-message {
+        color: #fc8181;
+      }
+
+      #visualize {
+        padding-top: 2rem;
+        min-height: 400px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      #visualize .car-name {
+        color: var(--primary-color);
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      #visualize .section-title {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-size: 1.8rem;
+      }
+
+      #visualize p {
+        margin-bottom: 1.5rem;
+        max-width: 800px;
+        opacity: 0.9;
+      }
+
+      body.dark-mode #visualize {
+        background-color: var(--dark-bg);
+      }
+
+      .models-comparison-container {
+        margin: 2rem 0;
+        background-color: var(--light-surface);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      body.dark-mode .models-comparison-container {
+        background-color: var(--dark-surface);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .model-comparison-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .model-comparison-header h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .model-comparison-header p {
+        opacity: 0.7;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .models-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+
+      .model-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .model-card h4 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .model-viewer-container {
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.05);
+        position: relative;
+      }
+
+      body.dark-mode .model-viewer-container {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .model-viewer-container spline-viewer {
+        width: 100%;
+        height: 100%;
+      }
+
+      .expand-model-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        backdrop-filter: blur(2px);
+      }
+
+      .expand-model-btn:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      body.dark-mode .expand-model-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      body.dark-mode .expand-model-btn:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .fullscreen-model-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 9999;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .fullscreen-model-container {
+        width: 90%;
+        height: 90%;
+        position: relative;
+      }
+
+      .fullscreen-model-container spline-viewer {
+        width: 100%;
+        height: 100%;
+      }
+
+      .fullscreen-controls {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 10000;
+      }
+
+      .minimize-fullscreen-btn,
+      .close-fullscreen-btn {
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .minimize-fullscreen-btn:hover,
+      .close-fullscreen-btn:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+
+      body.dark-mode .minimize-fullscreen-btn,
+      body.dark-mode .close-fullscreen-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      body.dark-mode .minimize-fullscreen-btn:hover,
+      body.dark-mode .close-fullscreen-btn:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .highlight-model {
+        animation: highlight-pulse 1.5s ease-in-out;
+        position: relative;
+        z-index: 5;
+      }
+
+      @keyframes highlight-pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.4);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(58, 134, 255, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(58, 134, 255, 0);
+        }
+      }
+
+      body.dark-mode .highlight-model {
+        animation: highlight-pulse-dark 1.5s ease-in-out;
+      }
+
+      @keyframes highlight-pulse-dark {
+        0% {
+          box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(58, 134, 255, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(58, 134, 255, 0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .models-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .model-viewer-container {
+          height: 250px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loader-container">
+      <div class="loader"></div>
+    </div>
+
+    <button class="theme-toggle" id="theme-toggle">
+      <i class="bi bi-sun-fill" id="theme-icon"></i>
+    </button>
+
+    <div class="car-viewer-container">
+      <img
+        src="https://media.discordapp.net/attachments/1368198011880214580/1368199066193760377/CleanShot_2025-05-03_at_05.02.132x.png?ex=68175a2d&is=681608ad&hm=eacc7a933bfd3608a67194f0e7d9353b078e0933fc320af46843f486c01bfa64&=&format=webp&quality=lossless&width=2018&height=1123"
+        alt="SEET Car Model"
+        class="cover-image"
+        id="cover-image"
+      />
+      <div class="spline-container" id="spline-container">
+        <script
+          type="module"
+          src="https://unpkg.com/@splinetool/viewer@1.9.89/build/spline-viewer.js"
+        ></script>
+        <spline-viewer
+          url="https://prod.spline.design/oP0hhEBQNXZxYwKo/scene.splinecode"
+        ></spline-viewer>
+      </div>
+      <button class="visualize-btn" id="visualize-btn" data-model="tavascan">
+        Visualize in 3D
+      </button>
+    </div>
+
+    <nav class="sticky-nav">
+      <div class="nav-links">
+        <a href="#overview" class="nav-link active">Overview</a>
+        <a href="#specs" class="nav-link">Specs</a>
+        <a href="#compare" class="nav-link">Compare</a>
+        <a href="#visualize" class="nav-link">Visualize</a>
+      </div>
+    </nav>
+
+    <div class="car-info">
+      <div id="overview" class="section">
+        <h1 class="car-name">CUPRA Tavascan</h1>
+        <p class="car-tagline">
+          The future of electric SUVs is here. Experience the perfect blend of
+          performance, design, and sustainability.
+        </p>
+
+        <div class="error-container" id="error-container">
+          <p class="error-message">
+            There was a problem loading the data. Please try again.
+          </p>
+          <button class="reload-btn" id="reload-btn">Reload</button>
+        </div>
+      </div>
+
+      <div id="specs" class="section">
+        <h2 class="section-title">Specifications</h2>
+        <div class="specs-grid">
+          <div class="spec-card">
+            <div class="spec-value">340 HP</div>
+            <div class="spec-title">Horsepower</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-value">545 Nm</div>
+            <div class="spec-title">Torque</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-value">5.6s</div>
+            <div class="spec-title">0-100 km/h</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-value">517 km</div>
+            <div class="spec-title">Range (WLTP)</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-value">160 km/h</div>
+            <div class="spec-title">Top Speed</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-value">AWD/RWD</div>
+            <div class="spec-title">Drive Options</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-value">77 kWh</div>
+            <div class="spec-title">Battery</div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-value">210 kW</div>
+            <div class="spec-title">Fast-Charge</div>
+          </div>
+        </div>
+
+        <h3 class="section-title" style="margin-top: 2rem">
+          Detailed Specifications
+        </h3>
+        <div class="detail-specs">
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Exterior Technology</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  Matrix LED head-lamps, 360º "Top-View" camera set, pop-out
+                  door handles & powered tailgate. Keyless entry + remote
+                  parking from the My CUPRA app.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 6–10, 204-233</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Electric Heart</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  77 kWh high-voltage battery, up to 210 kW DC fast-charge (≈
+                  10-80% in 30 min). Home-schedule charging & bidirectional Home
+                  Energy Management ready.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 73-91</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Drive & Feel</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  Single-motor RWD or twin-motor AWD. Five Drive Profiles
+                  (Range, Comfort, CUPRA, Performance, Individual).
+                  Steering-paddle energy-recuperation and e-Sound for acoustic
+                  presence.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 149-164</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Safety Cocoon</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  7 airbags incl. a central airbag between front seats.
+                  Pre-Crash system, seat-belt tensioners & force limiters.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 37-55</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Co-Pilot Suite</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  ACC with predictive speed, Lane/Side/Travel Assist, Emergency
+                  Assist, Park Pilot, Rear Cross-Traffic Alert, Traffic-sign
+                  recognition, Drowsiness & Attention monitors.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 170-233</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Digital Cockpit</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  5.3-inch cluster + 15-inch infotainment + AR Head-Up Display.
+                  Widgets can be rearranged; online nav, OTA updates, wireless
+                  CarPlay/Android Auto, in-car Wi-Fi, CUPRA Connect remote
+                  services.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 15-36, 237-257</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Comfort & Practicality</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  Dual-zone Clima with heat-pump option, panoramic roof, massage
+                  sports seats, 540 L boot, 1,400 kg towing (factory hitch),
+                  roof-rail system.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 114-146, 288-305</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Living With It</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  Electronic parking brake + Auto-Hold, 12 V & USB-C outlets,
+                  wireless phone charger, over-the-air map & software updates,
+                  digital manual in the infotainment.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 112-135, 237-254</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 class="detail-title">Emergency & Service</h3>
+              <i class="bi bi-chevron-down detail-icon"></i>
+            </div>
+            <div class="detail-content">
+              <div class="detail-body">
+                <p>
+                  Tyre-repair kit, flat-bed towing eye, 12 V jump-start posts,
+                  service intervals shown in the Status screen, 8-yr/160,000 km
+                  HV-battery warranty.
+                </p>
+                <p class="manual-ref">Reference: Manual pp. 305-331, 344-355</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="compare" class="section">
+        <h2 class="section-title">Comparison</h2>
+
+        <div class="models-comparison-container">
+          <div class="model-comparison-header">
+            <h3>Compare 3D Models</h3>
+            <p>Explore and compare both vehicles in 3D</p>
+          </div>
+          <div class="models-grid">
+            <div class="model-card">
+              <h4>SEAT Arona FR</h4>
+              <div class="model-viewer-container">
+                <button class="expand-model-btn" data-model="arona">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
+                <script
+                  type="module"
+                  src="https://unpkg.com/@splinetool/viewer@1.9.89/build/spline-viewer.js"
+                ></script>
+                <spline-viewer
+                  url="https://prod.spline.design/lhUUtWD7MewZHkW1/scene.splinecode"
+                ></spline-viewer>
+              </div>
+            </div>
+            <div class="model-card">
+              <h4>CUPRA Tavascan</h4>
+              <div class="model-viewer-container">
+                <button class="expand-model-btn" data-model="tavascan">
+                  <i class="bi bi-fullscreen"></i>
+                </button>
+                <script
+                  type="module"
+                  src="https://unpkg.com/@splinetool/viewer@1.9.89/build/spline-viewer.js"
+                ></script>
+                <spline-viewer
+                  url="https://prod.spline.design/oP0hhEBQNXZxYwKo/scene.splinecode"
+                ></spline-viewer>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          A punchy petrol pocket-SUV versus a bold all-electric coupe-SUV: the
+          SEAT Arona FR and the 2024 CUPRA Tavascan sit at opposite ends of the
+          VW-Group crossover family. Arona keeps things light, affordable and
+          city-friendly with a 110 PS 1.0-litre turbo and a 400-litre boot;
+          Tavascan brings 340 PS of dual-motor power, a 77 kWh battery and 540
+          litres of cargo space, priced roughly <strong>£20k more</strong> but
+          offering five-second 0-100 km/h sprints and 520 km WLTP range. The
+          table below lines up the headline facts so you can see where each car
+          excels.
+        </p>
+
+        <div class="comparison-table-container">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Spec / Feature</th>
+                <th>SEAT Arona FR (2024 1.0 TSI 110)</th>
+                <th>CUPRA Tavascan VZ (2024 AWD 77 kWh)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Segment / platform</td>
+                <td>Small B-SUV, MQB-A0</td>
+                <td>Mid-size electric SUV-coupé, MEB</td>
+              </tr>
+              <tr>
+                <td>Powertrain</td>
+                <td>
+                  1.0 TSI 3-cyl petrol, 81 kW (110 PS), 200 Nm, 6-sp manual/7-sp
+                  DSG, FWD
+                </td>
+                <td>Dual e-motors, 250 kW (340 PS), 545 Nm, AWD, 1-speed</td>
+              </tr>
+              <tr>
+                <td>0-100 km/h (0-62 mph)</td>
+                <td><strong>9.8 s</strong> (DSG)</td>
+                <td><strong>5.5 s</strong></td>
+              </tr>
+              <tr>
+                <td>Top speed</td>
+                <td>190 km/h (118 mph)</td>
+                <td>180 km/h (112 mph) limited</td>
+              </tr>
+              <tr>
+                <td>Energy / fuel</td>
+                <td>Petrol; WLTP combined 47-50 mpg (≈ 5.7-6.0 l/100 km)</td>
+                <td>
+                  77 kWh usable battery; WLTP range <strong>521 km</strong> (324
+                  mi)
+                </td>
+              </tr>
+              <tr>
+                <td>DC charge time 10-80 %</td>
+                <td>n/a (refuel < 5 min)</td>
+                <td><strong>28 min @ 135 kW</strong></td>
+              </tr>
+              <tr>
+                <td>Length × width × height</td>
+                <td>4 153 × 1 780 × 1 552 mm</td>
+                <td>4 644 × 1 861 × 1 597 mm</td>
+              </tr>
+              <tr>
+                <td>Boot capacity (seats up)</td>
+                <td><strong>400 L</strong></td>
+                <td><strong>540 L</strong></td>
+              </tr>
+              <tr>
+                <td>Towing (braked)</td>
+                <td>1 200 kg* (1.5 TSI) / <em>not rated for 1.0 TSI</em></td>
+                <td>1 200 kg</td>
+              </tr>
+              <tr>
+                <td>Infotainment highlight</td>
+                <td>
+                  9.2" floating touchscreen + 10.25" Digital Cockpit, SEAT
+                  CONNECT app
+                </td>
+                <td>
+                  15" central display + AR head-up + My CUPRA app, OTA updates
+                </td>
+              </tr>
+              <tr>
+                <td>ADAS / safety</td>
+                <td>
+                  ACC, Lane & Travel Assist, 5-star Euro NCAP (2022 update)
+                </td>
+                <td>
+                  ACC w/ predictive nav, Travel & Side Assist, 5-star Euro NCAP
+                  (2024)
+                </td>
+              </tr>
+              <tr>
+                <td>UK RRP (2024)</td>
+                <td>
+                  <strong>£27,490</strong> FR Limited Edition; range from
+                  ~£22.5k
+                </td>
+                <td>
+                  <strong>£47,350–£60,845</strong> depending on trim/battery
+                </td>
+              </tr>
+              <tr>
+                <td>Running-cost snapshot</td>
+                <td>Insurance group 11–12; petrol tax band £195/yr</td>
+                <td>
+                  VED £0 (first year), £370 "luxury EV" supplement >£40k; home
+                  charging ≈ 15p/mile†
+                </td>
+              </tr>
+              <tr>
+                <td>Who it suits</td>
+                <td>
+                  City drivers, new owners wanting sporty looks, low entry price
+                  & easy parking
+                </td>
+                <td>
+                  Tech-hungry early EV adopters needing long-range, fast-charge
+                  touring and hot-hatch pace
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="table-footnote">
+            †Based on UK average 29 p/kWh domestic tariff and real-world 4
+            mi/kWh efficiency.
+          </p>
+        </div>
+
+        <h3 class="section-title">Key takeaways</h3>
+        <ul class="takeaways-list">
+          <li>
+            <strong>Size & practicality:</strong> Tavascan is 49 cm longer and
+            offers 140 L more boot space, making it family-trip ready, while
+            Arona's compact footprint aids urban manoeuvres.
+          </li>
+          <li>
+            <strong>Performance:</strong> Even the fastest Arona (1.5 TSI 150
+            PS) can't match the Tavascan's electric shove; the EV halves the
+            0-100 km/h sprint time.
+          </li>
+          <li>
+            <strong>Running costs:</strong> Arona wins on purchase price and
+            traditional refuelling convenience; Tavascan counters with
+            zero-tailpipe emissions, lower energy cost per mile and London ULEZ
+            exemption.
+          </li>
+          <li>
+            <strong>Tech & feel:</strong> Tavascan's 15-inch screen, AR-HUD and
+            dual-motor AWD feel next-gen, whereas Arona focuses on proven
+            hardware and a lighter, more analogue driving experience.
+          </li>
+        </ul>
+
+        <p>
+          Use this table to decide whether you're after
+          <strong>efficient petrol practicality</strong> or
+          <strong>all-electric performance and tech flair</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div id="visualize" class="section">
+      <h2 class="section-title">Visualize Your CUPRA Tavascan</h2>
+      <p>
+        See your CUPRA Tavascan in different locations around the world. Enter a
+        city, landmark, or any location to generate an image.
+      </p>
+
+      <div class="visualize-form">
+        <div class="location-input-group">
+          <input
+            type="text"
+            id="location-input"
+            class="location-input"
+            placeholder="Enter a location (e.g., Barcelona, Paris, New York)"
+          />
+          <button id="submit-location" class="generate-btn">Generate</button>
+        </div>
+
+        <div id="spinner" class="spinner"></div>
+        <div id="error-msg" class="error-message">
+          There was an error generating the image. Please try again.
+        </div>
+
+        <div class="visualization-result">
+          <img
+            id="location-image"
+            class="location-image"
+            alt="CUPRA Tavascan visualization"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="fullscreen-model-overlay" id="fullscreen-overlay">
+      <div class="fullscreen-controls">
+        <button class="minimize-fullscreen-btn" title="Minimize">
+          <i class="bi bi-arrows-angle-contract"></i>
+        </button>
+        <button class="close-fullscreen-btn" title="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="fullscreen-model-container">
+        <script
+          type="module"
+          src="https://unpkg.com/@splinetool/viewer@1.9.89/build/spline-viewer.js"
+        ></script>
+        <spline-viewer id="fullscreen-spline-viewer"></spline-viewer>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script id="app-script">
+      document.addEventListener("DOMContentLoaded", function () {
+        // Loading functionality
+        const loader = document.querySelector(".loader-container");
+        setTimeout(() => {
+          loader.classList.add("hidden");
+        }, 1500);
+
+        // Apply dark mode by default
+        const body = document.body;
+        body.classList.add("dark-mode");
+
+        // Store original theme toggle function for reference
+        const themeToggle = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+
+        // Update icon to match dark mode
+        themeIcon.classList.remove("bi-sun-fill");
+        themeIcon.classList.add("bi-moon-fill");
+
+        // Toggle between cover image and 3D viewer
+        const visualizeBtn = document.getElementById("visualize-btn");
+        const coverImage = document.getElementById("cover-image");
+        const splineContainer = document.getElementById("spline-container");
+
+        // Set initial state
+        coverImage.style.display = "block";
+        splineContainer.style.display = "none";
+
+        visualizeBtn.addEventListener("click", function () {
+          if (splineContainer.style.display === "block") {
+            // Switch back to cover image
+            splineContainer.style.display = "none";
+            coverImage.style.display = "block";
+            visualizeBtn.textContent = "Visualize in 3D";
+          } else {
+            // Switch to 3D viewer
+            splineContainer.style.display = "block";
+            coverImage.style.display = "none";
+            visualizeBtn.textContent = "View Image";
+          }
+        });
+
+        // Visualization API functionality
+        const locationInput = document.getElementById("location-input");
+        const submitLocationBtn = document.getElementById("submit-location");
+        const locationImage = document.getElementById("location-image");
+        const spinner = document.getElementById("spinner");
+        const errorMsg = document.getElementById("error-msg");
+
+        submitLocationBtn.addEventListener("click", async function () {
+          const location = locationInput.value.trim();
+
+          if (!location) {
+            errorMsg.textContent = "Please enter a location.";
+            errorMsg.style.display = "block";
+            return;
+          }
+
+          // Show spinner, hide error and previous image
+          spinner.style.display = "block";
+          errorMsg.style.display = "none";
+          locationImage.style.display = "none";
+
+          try {
+            const url =
+              "https://magicloops.dev/api/loop/a60da253-2bd4-47d1-bbb9-ff33fe2110cf/run";
+
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ input: location }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+
+            const responseJson = await response.json();
+            console.log("API Response:", responseJson);
+
+            // Check response structure and extract image URL
+            if (
+              responseJson &&
+              Array.isArray(responseJson.images) &&
+              responseJson.images.length > 0
+            ) {
+              const imageUrl = responseJson.images[0];
+              console.log("Image URL:", imageUrl);
+
+              if (typeof imageUrl === "string" && imageUrl.startsWith("http")) {
+                locationImage.src = imageUrl;
+                locationImage.style.display = "block";
+              } else {
+                throw new Error("Invalid image URL format");
+              }
+            } else {
+              throw new Error(
+                "No image in response or invalid response format"
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            errorMsg.textContent =
+              "There was an error generating the image. Please try again.";
+            errorMsg.style.display = "block";
+          } finally {
+            spinner.style.display = "none";
+          }
+        });
+
+        // Allow pressing Enter to submit
+        locationInput.addEventListener("keyup", function (event) {
+          if (event.key === "Enter") {
+            submitLocationBtn.click();
+          }
+        });
+
+        // Theme toggling
+        themeToggle.addEventListener("click", function () {
+          body.classList.toggle("dark-mode");
+
+          if (body.classList.contains("dark-mode")) {
+            localStorage.setItem("theme", "dark");
+            themeIcon.classList.remove("bi-sun-fill");
+            themeIcon.classList.add("bi-moon-fill");
+          } else {
+            localStorage.setItem("theme", "light");
+            themeIcon.classList.remove("bi-moon-fill");
+            themeIcon.classList.add("bi-sun-fill");
+          }
+        });
+
+        // Navigation handling
+        const navLinks = document.querySelectorAll(".nav-link");
+        const contentSections = document.querySelectorAll(".section");
+
+        // Function to show only specific sections based on the active tab
+        function updateSectionsVisibility(activeId) {
+          // First, hide all sections except overview
+          contentSections.forEach((section) => {
+            const sectionId = section.getAttribute("id");
+            if (sectionId !== "overview") {
+              section.style.display = "none";
+            } else {
+              section.style.display = "block"; // Overview is always visible
+            }
+          });
+
+          // Show the active section
+          if (activeId === "overview") {
+            // If overview is clicked, show all sections
+            contentSections.forEach((section) => {
+              section.style.display = "block";
+            });
+          } else if (activeId) {
+            // Otherwise, show only the selected section
+            const activeSection = document.getElementById(activeId);
+            if (activeSection) {
+              activeSection.style.display = "block";
+            }
+          }
+        }
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            // Update active class
+            navLinks.forEach((l) => l.classList.remove("active"));
+            this.classList.add("active");
+
+            // Get the target section id from the href
+            const targetId = this.getAttribute("href").substring(1);
+
+            // Update sections visibility
+            updateSectionsVisibility(targetId);
+          });
+        });
+
+        // Initialize with the active tab
+        const initialActiveLink = document.querySelector(".nav-link.active");
+        if (initialActiveLink) {
+          const initialTargetId = initialActiveLink
+            .getAttribute("href")
+            .substring(1);
+          updateSectionsVisibility(initialTargetId);
+        }
+
+        // Detail cards expansion
+        const detailCards = document.querySelectorAll(".detail-card");
+
+        detailCards.forEach((card) => {
+          const header = card.querySelector(".detail-header");
+
+          header.addEventListener("click", function () {
+            card.classList.toggle("active");
+
+            // Load comparison data when the card is expanded (only for comparison cards in the compare section)
+            if (card.classList.contains("active") && card.closest("#compare")) {
+              // This is where we would make API calls in a real app
+              // For the prototype, we'll just indicate it's a prototype
+              const tableRows = card.querySelectorAll("tbody tr");
+
+              tableRows.forEach((row) => {
+                const cells = row.querySelectorAll("td");
+                if (cells.length >= 4) {
+                  // Update "Your Previous Car" column
+                  cells[2].textContent = "This is a prototype";
+
+                  // Update "Difference" column
+                  cells[3].textContent = "Prototype data";
+                  cells[3].classList.remove("better", "worse");
+                } else if (cells.length >= 3) {
+                  // For tables without a difference column
+                  cells[2].textContent = "This is a prototype";
+                }
+              });
+            }
+          });
+        });
+
+        // Error handling and reload button
+        const reloadBtn = document.getElementById("reload-btn");
+
+        reloadBtn.addEventListener("click", function () {
+          location.reload();
+        });
+
+        // Simulate API calls
+        function fetchCarData() {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve({
+                success: true,
+                message:
+                  "This is a prototype, continue building to see the full version.",
+              });
+            }, 1000);
+          });
+        }
+
+        // Intersection Observer for scroll-based navigation highlighting
+        const observableElements = document.querySelectorAll(".section");
+
+        const observerOptions = {
+          root: null,
+          rootMargin: "-80px 0px 0px 0px",
+          threshold: 0.1,
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.getAttribute("id");
+
+              navLinks.forEach((link) => {
+                link.classList.remove("active");
+                if (link.getAttribute("href") === `#${id}`) {
+                  link.classList.add("active");
+                }
+              });
+            }
+          });
+        }, observerOptions);
+
+        observableElements.forEach((section) => {
+          observer.observe(section);
+        });
+
+        // Initialize the page
+        fetchCarData()
+          .then((data) => {
+            if (!data.success) {
+              document.getElementById("error-container").style.display =
+                "block";
+            }
+          })
+          .catch(() => {
+            document.getElementById("error-container").style.display = "block";
+          });
+
+        // Fullscreen 3D model functionality
+        const fullscreenOverlay = document.getElementById("fullscreen-overlay");
+        const fullscreenSplineViewer = document.getElementById(
+          "fullscreen-spline-viewer"
+        );
+        const closeFullscreenBtn = document.querySelector(
+          ".close-fullscreen-btn"
+        );
+        const minimizeFullscreenBtn = document.querySelector(
+          ".minimize-fullscreen-btn"
+        );
+        const expandModelBtns = document.querySelectorAll(".expand-model-btn");
+
+        // Track the current model being viewed
+        let currentModelId = null;
+
+        // Model URLs
+        const modelUrls = {
+          arona: "https://prod.spline.design/lhUUtWD7MewZHkW1/scene.splinecode",
+          tavascan:
+            "https://prod.spline.design/oP0hhEBQNXZxYwKo/scene.splinecode",
+        };
+
+        // Function to open fullscreen model
+        function openFullscreenModel(modelId) {
+          if (modelUrls[modelId]) {
+            currentModelId = modelId;
+            fullscreenSplineViewer.setAttribute("url", modelUrls[modelId]);
+
+            // Small delay to ensure the model loads properly
+            setTimeout(() => {
+              fullscreenOverlay.style.display = "flex";
+              document.body.style.overflow = "hidden"; // Prevent scrolling
+            }, 100);
+          }
+        }
+
+        // Close fullscreen model
+        closeFullscreenBtn.addEventListener("click", function () {
+          fullscreenOverlay.style.display = "none";
+          document.body.style.overflow = ""; // Enable scrolling
+          currentModelId = null;
+        });
+
+        // Minimize fullscreen model
+        minimizeFullscreenBtn.addEventListener("click", function () {
+          fullscreenOverlay.style.display = "none";
+          document.body.style.overflow = ""; // Enable scrolling
+
+          // Scroll to the minimized model view
+          if (currentModelId) {
+            const modelCard = document
+              .querySelector(
+                `.expand-model-btn[data-model="${currentModelId}"]`
+              )
+              .closest(".model-card");
+
+            if (modelCard) {
+              // Scroll to the model card
+              modelCard.scrollIntoView({ behavior: "smooth", block: "center" });
+
+              // Add a highlight effect to show where the model was minimized to
+              modelCard.classList.add("highlight-model");
+              setTimeout(() => {
+                modelCard.classList.remove("highlight-model");
+              }, 1500);
+            }
+          }
+        });
+
+        // Event listeners for expand buttons
+        expandModelBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const modelId = this.getAttribute("data-model");
+            openFullscreenModel(modelId);
+          });
+        });
+
+        // Make the Visualize in 3D button open fullscreen as well
+        visualizeBtn.addEventListener("click", function () {
+          const modelId = this.getAttribute("data-model");
+
+          if (splineContainer.style.display === "block") {
+            // If already in 3D view, switch back to cover
+            splineContainer.style.display = "none";
+            coverImage.style.display = "block";
+            visualizeBtn.textContent = "Visualize in 3D";
+          } else {
+            // Switch to 3D viewer and open fullscreen
+            splineContainer.style.display = "block";
+            coverImage.style.display = "none";
+            visualizeBtn.textContent = "View Image";
+
+            // Open in fullscreen if desired
+            if (modelId) {
+              openFullscreenModel(modelId);
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
