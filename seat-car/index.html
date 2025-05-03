@@ -910,6 +910,60 @@
           height: 250px;
         }
       }
+
+      /* Predefined locations styling */
+      .predefined-locations {
+        margin: 1.5rem 0;
+      }
+
+      .location-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+
+      .location-btn {
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      body.dark-mode .location-btn {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      .location-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .location-btn.active {
+        background: var(--dark-text);
+        color: var(--dark-bg);
+      }
+
+      body.dark-mode .location-btn.active {
+        background: var(--dark-text);
+        color: var(--dark-bg);
+      }
+
+      @media (max-width: 768px) {
+        .location-buttons {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1212,7 +1266,7 @@
           VW-Group crossover family. Arona keeps things light, affordable and
           city-friendly with a 110 PS 1.0-litre turbo and a 400-litre boot;
           Tavascan brings 340 PS of dual-motor power, a 77 kWh battery and 540
-          litres of cargo space, priced roughly <strong>£20k more</strong> but
+          litres of cargo space, priced roughly <strong>€23.5k more</strong> but
           offering five-second 0-100 km/h sprints and 520 km WLTP range. The
           table below lines up the headline facts so you can see where each car
           excels.
@@ -1302,19 +1356,19 @@
               <tr>
                 <td>UK RRP (2024)</td>
                 <td>
-                  <strong>£27,490</strong> FR Limited Edition; range from
-                  ~£22.5k
+                  <strong>€32,500</strong> FR Limited Edition; range from
+                  ~€26.5k
                 </td>
                 <td>
-                  <strong>£47,350–£60,845</strong> depending on trim/battery
+                  <strong>€55,990–€71,990</strong> depending on trim/battery
                 </td>
               </tr>
               <tr>
                 <td>Running-cost snapshot</td>
-                <td>Insurance group 11–12; petrol tax band £195/yr</td>
+                <td>Insurance group 11–12; petrol tax band €230/yr</td>
                 <td>
-                  VED £0 (first year), £370 "luxury EV" supplement >£40k; home
-                  charging ≈ 15p/mile†
+                  Road tax €0 (first year), €435 "luxury EV" supplement >€47k;
+                  home charging ≈ 0.18€/km†
                 </td>
               </tr>
               <tr>
@@ -1331,8 +1385,8 @@
             </tbody>
           </table>
           <p class="table-footnote">
-            †Based on UK average 29 p/kWh domestic tariff and real-world 4
-            mi/kWh efficiency.
+            †Based on European average 0.35 €/kWh domestic tariff and real-world
+            5.5 km/kWh efficiency.
           </p>
         </div>
 
@@ -1372,17 +1426,42 @@
     <div id="visualize" class="section">
       <h2 class="section-title">Visualize Your CUPRA Tavascan</h2>
       <p>
-        See your CUPRA Tavascan in different locations around the world. Enter a
-        city, landmark, or any location to generate an image.
+        See your CUPRA Tavascan in different locations around the world. Choose
+        from our predefined options or enter your own location.
       </p>
 
-      <div class="visualize-form">
+      <div class="predefined-locations">
+        <h3 class="mb-3">Select a location:</h3>
+        <div class="location-buttons">
+          <button
+            class="location-btn"
+            data-image="https://app.magicloops.dev/storage/v1/object/public/images/d4a8834a-2933-41ea-b67a-694b5f80636e/55d30804-0cd9-493a-a3f0-e4bdeed72098.png"
+          >
+            Barcelona
+          </button>
+          <button
+            class="location-btn"
+            data-image="https://app.magicloops.dev/storage/v1/object/public/images/d4a8834a-2933-41ea-b67a-694b5f80636e/fb11c7da-a4b5-4bfa-9b49-e1b7a8437020.png"
+          >
+            Hong Kong
+          </button>
+          <button
+            class="location-btn"
+            data-image="https://app.magicloops.dev/storage/v1/object/public/images/d4a8834a-2933-41ea-b67a-694b5f80636e/54bef385-bc17-4dc6-82b4-bcaf24ad1246.png"
+          >
+            Paris
+          </button>
+        </div>
+      </div>
+
+      <div class="visualize-form mt-4">
+        <p class="mb-3">Or enter a custom location:</p>
         <div class="location-input-group">
           <input
             type="text"
             id="location-input"
             class="location-input"
-            placeholder="Enter a location (e.g., Barcelona, Paris, New York)"
+            placeholder="Enter a location (e.g., New York, Tokyo, Sydney)"
           />
           <button id="submit-location" class="generate-btn">Generate</button>
         </div>
@@ -1539,6 +1618,36 @@
           if (event.key === "Enter") {
             submitLocationBtn.click();
           }
+        });
+
+        // Handle predefined location buttons
+        const locationButtons = document.querySelectorAll(".location-btn");
+
+        locationButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            // Remove active class from all buttons
+            locationButtons.forEach((btn) => btn.classList.remove("active"));
+
+            // Add active class to clicked button
+            this.classList.add("active");
+
+            // Get the image URL from the data attribute
+            const imageUrl = this.getAttribute("data-image");
+
+            // Hide spinner, error and show image
+            spinner.style.display = "none";
+            errorMsg.style.display = "none";
+
+            // Set the image source and display it
+            locationImage.src = imageUrl;
+            locationImage.style.display = "block";
+
+            // Scroll to the image
+            locationImage.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
         });
 
         // Theme toggling
