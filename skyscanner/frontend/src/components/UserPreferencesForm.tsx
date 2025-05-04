@@ -118,7 +118,7 @@ export default function UserPreferencesForm({ onSubmit }: Props) {
                   type="button"
                   onClick={() => handleTagToggle(tag)}
                   className={`px-3 py-1 rounded-full border text-sm ${
-                    tags.includes(tag) ? "bg-blue-600 text-white" : "bg-gray-200"
+                    tags.includes(tag) ? "bg-skyscannerDark text-white" : "bg-skyscannerDark text-white"
                   }`}
                 >
                   {tag}
@@ -130,7 +130,7 @@ export default function UserPreferencesForm({ onSubmit }: Props) {
 
         {/* Custom tag input */}
         <div>
-          <p className="font-semibold mb-2">➕ Add Your Own</p>
+          <p className="font-semibold mb-2"> Add Your Own</p>
           <div className="flex gap-2">
             <input
               type="text"
@@ -142,7 +142,7 @@ export default function UserPreferencesForm({ onSubmit }: Props) {
             <button
               type="button"
               onClick={handleAddCustomTag}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              className="bg-skyscannerBlue text-white px-4 py-2 rounded hover:bg-skyscannerDark"
             >
               Add
             </button>
@@ -163,7 +163,7 @@ export default function UserPreferencesForm({ onSubmit }: Props) {
         </div>
       </div>
 
-      <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 text-lg">
+      <button type="submit" className="w-full bg-skyscannerBlue text-white p-2 rounded hover:bg-skyscannerDark text-lg">
         🚀 Submit Preferences
       </button>
     </form>

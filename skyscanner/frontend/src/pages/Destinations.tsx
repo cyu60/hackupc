@@ -30,7 +30,7 @@ export default function Destinations() {
   We’ve analyzed your team’s preferences and selected the best destinations for you.
   Now, we’re going one step further.  
   <br />
-  <span className="font-semibold text-purple-700">
+  <span className="font-semibold text-skyscannerBlue">
     Your brain will choose the perfect city — even before you realize it.
   </span>
   <br />
@@ -48,9 +48,9 @@ export default function Destinations() {
           <div className="flex justify-center">
             <button
               onClick={() => navigate(`/eeg-session/${encodeURIComponent(localCities[0].toLowerCase())}`)}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded text-lg transition"
-            >
-              🚀 Sit down and let your true self Decide!
+              className="bg-skyscannerBlue hover:bg-[#008AC1] text-white px-6 py-3 rounded text-lg"
+              >
+              🚀 Sit down and let your true self decide!
             </button>
           </div>
         </>

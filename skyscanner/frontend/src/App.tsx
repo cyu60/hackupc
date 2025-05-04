@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Preferences from "./pages/Preferences";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GroupVoting from "./pages/GroupVoting";
@@ -11,7 +12,7 @@ import Team from "./pages/Team";
 import ImagesPage from "./pages/Images";
 import Destinations from "./pages/Destinations";
 import EEGCitySession from "./pages/EEGCitySession";
-import ResultsPage from "./pages/Results"; // ✅ Add this if you're using results
+import ResultsPage from "./pages/Results";
 
 import { TeamProvider } from "@/context/TeamContext";
 import { CitySessionProvider } from "@/context/CitySessionContext";
@@ -35,6 +36,8 @@ const App = () => (
               <Route path="/results" element={<ResultsPage />} /> {/* ✅ New route */}
               <Route path="/vote" element={<GroupVoting />} />
               <Route path="*" element={<NotFound />} />
+              <Route path="/preferences" element={<Preferences />} />
+
             </Routes>
           </BrowserRouter>
         </CitySessionProvider>
