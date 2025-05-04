@@ -15,7 +15,7 @@ export default function Team() {
           <div key={i} className="bg-white p-4 rounded shadow border">
             <h2 className="text-lg font-semibold">{member.name}</h2>
             <p className="text-sm text-gray-600">From: {member.city}</p>
-            <p className="text-sm text-gray-600">Budget: €{member.budget}</p>
+            {/*<p className="text-sm text-gray-600">Budget: €{member.budget}</p>*/}
             <div className="flex flex-wrap gap-1 mt-2">
               {member.tags.map((tag, idx) => (
                 <span

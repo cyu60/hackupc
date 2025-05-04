@@ -1,9 +1,11 @@
 import { useCitySession } from "@/context/CitySessionContext";
 import { useTeam } from "@/context/TeamContext";
+import {useNavigate} from "react-router-dom";
 
 export default function ResultsPage() {
   const { cities } = useCitySession();
   const { members } = useTeam();
+const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-white px-6 py-10">
@@ -24,7 +26,7 @@ export default function ResultsPage() {
       <div className="mt-8 flex justify-center">
         <button
           className="bg-purple-600 text-white px-6 py-3 rounded text-lg hover:bg-purple-700"
-          onClick={() => alert("Redirect to group voting or booking")}
+          onClick={() => navigate('/vote')}
         >
           🗳️ Proceed to Group Voting
         </button>

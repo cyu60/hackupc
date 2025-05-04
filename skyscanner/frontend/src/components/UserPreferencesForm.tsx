@@ -110,7 +110,7 @@ export default function UserPreferencesForm({ onSubmit }: Props) {
       <div className="space-y-6">
         {TAG_CATEGORIES.map(({ title, emoji, tags: categoryTags }) => (
           <div key={title}>
-            <p className="font-semibold mb-2 text-lg">{emoji} {title}</p>
+            <p className="font-semibold mb-2 mt-4 text-lg">{emoji} {title}</p>
             <div className="flex flex-wrap gap-2">
               {categoryTags.map(tag => (
                 <button
@@ -118,7 +118,7 @@ export default function UserPreferencesForm({ onSubmit }: Props) {
                   type="button"
                   onClick={() => handleTagToggle(tag)}
                   className={`px-3 py-1 rounded-full border text-sm ${
-                    tags.includes(tag) ? "bg-skyscannerDark text-white" : "bg-skyscannerDark text-white"
+                    tags.includes(tag) ? "bg-skyscannerDark text-white":"bg-skyscannerLight text-black"
                   }`}
                 >
                   {tag}

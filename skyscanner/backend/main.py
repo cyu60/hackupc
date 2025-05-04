@@ -184,7 +184,7 @@ if __name__ == "__main__":
             if metrics_tracker.should_summarize():
                 summary = metrics_tracker.get_summary()
                 print("\n=== SUMMARY ANALYSIS (Last 50 readings) ===")
-                print({summary["metrics"]})
+                print(summary["metrics"])
 
                 # Send summary via WebSocket
                 ws_data = {"type": "summary", "metrics": summary["metrics"], "timestamp": time.time()}
