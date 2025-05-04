@@ -23,7 +23,7 @@ export const TeamProvider = ({ children }: { children: React.ReactNode }) => {
       tags: ["Art", "Museums", "Nightlife"],
     },
     {
-      name: "Mudassar",
+      name: "Mudi",
       city: "Hamburg",
       budget: 1000,
       tags: ["Food", "Culture", "Local Festivals"],

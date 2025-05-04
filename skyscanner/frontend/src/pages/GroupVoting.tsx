@@ -1,25 +1,27 @@
-
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { apiService } from "@/services/apiService";
-import { Card, CardContent } from "@/components/ui/card";
-import { Friend, GroupVote, City } from "@/types";
-import { Check, Vote } from "lucide-react";
+import React, {useEffect, useState} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
+import {Button} from "@/components/ui/button";
+import {useToast} from "@/hooks/use-toast";
+import {apiService} from "@/services/apiService";
+import {Card, CardContent} from "@/components/ui/card";
+import {City, Friend, GroupVote} from "@/types";
+import {Check, Vote} from "lucide-react";
+import {useCitySession} from "@/context/CitySessionContext.tsx";
 
 const GroupVoting = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { cities } = useCitySession();
   const { toast } = useToast();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [myVote, setMyVote] = useState<string | null>(null);
   const [groupVotes, setGroupVotes] = useState<GroupVote[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [userId] = useState("user-" + Math.random().toString(36).substring(2, 9)); // Generate a random user ID
-  
+  console.log(cities)
   // Get the selected city from location state
   const selectedCity = location.state?.selectedCity as City | undefined;
+  console.log(location.state)
   
   // Load friends and votes
   useEffect(() => {
@@ -86,13 +88,11 @@ const GroupVoting = () => {
       ...(selectedCity ? [selectedCity] : []),
       ...friends.map(friend => friend.topCity),
     ];
-    
+
     // Filter out duplicates based on city name
-    const uniqueCities = Array.from(
-      new Map(allCities.map(city => [city.name, city])).values()
+    return Array.from(
+        new Map(allCities.map(city => [city.name, city])).values()
     );
-    
-    return uniqueCities;
   };
 
   return (
@@ -216,7 +216,7 @@ const GroupVoting = () => {
                 </div>
               </section>
 
-              <section className="mt-8">
+              {/*<section className="mt-8">
                 <h2 className="text-xl font-semibold mb-4">Current Results</h2>
                 {groupVotes.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -256,7 +256,7 @@ const GroupVoting = () => {
                     No votes cast yet. Be the first to vote!
                   </p>
                 )}
-              </section>
+              </section>*/}
             </div>
           </>
         )}
