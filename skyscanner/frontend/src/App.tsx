@@ -11,9 +11,10 @@ import Team from "./pages/Team";
 import ImagesPage from "./pages/Images";
 import Destinations from "./pages/Destinations";
 import EEGCitySession from "./pages/EEGCitySession";
+import ResultsPage from "./pages/Results"; // ✅ Add this if you're using results
 
 import { TeamProvider } from "@/context/TeamContext";
-import { CitySessionProvider } from "@/context/CitySessionContext"; // ✅ IMPORT YOUR NEW CONTEXT
+import { CitySessionProvider } from "@/context/CitySessionContext";
 
 const queryClient = new QueryClient();
 
@@ -23,15 +24,16 @@ const App = () => (
       <Toaster />
       <Sonner />
       <TeamProvider>
-        <CitySessionProvider> {/* ✅ WRAP ROUTES HERE */}
+        <CitySessionProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/vote" element={<GroupVoting />} />
               <Route path="/team" element={<Team />} />
               <Route path="/destinations" element={<Destinations />} />
               <Route path="/images/:city" element={<ImagesPage />} />
               <Route path="/eeg-session/:city" element={<EEGCitySession />} />
+              <Route path="/results" element={<ResultsPage />} /> {/* ✅ New route */}
+              <Route path="/vote" element={<GroupVoting />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

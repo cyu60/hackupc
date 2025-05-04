@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchCityImages } from "@/lib/pexels";
 import { useCitySession } from "@/context/CitySessionContext"; // ✅ import context
+import EEGVisualization from "@/components/EEGVisualization";
 
 export default function EEGCitySession() {
   const { city } = useParams<{ city: string }>();
@@ -69,6 +70,7 @@ export default function EEGCitySession() {
           </div>
         </>
       )}
+      
     </div>
   );
 }
