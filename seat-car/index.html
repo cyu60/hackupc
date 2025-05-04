@@ -991,9 +991,16 @@
           url="https://prod.spline.design/oP0hhEBQNXZxYwKo/scene.splinecode"
         ></spline-viewer>
       </div>
-      <button class="visualize-btn" id="visualize-btn" data-model="tavascan">
+      <a
+        class="visualize-btn"
+        id="visualize-btn"
+        data-model="tavascan"
+        href="https://my.spline.design/carexport-HIQe93O0mHXrmFMblxMdx4rP/"
+        target="_blank"
+        style="text-decoration: none"
+      >
         Visualize in 3D
-      </button>
+      </a>
     </div>
 
     <nav class="sticky-nav">
@@ -1367,8 +1374,8 @@
                 <td>Running-cost snapshot</td>
                 <td>Insurance group 11–12; petrol tax band €230/yr</td>
                 <td>
-                  Road tax €0 (first year), €435 "luxury EV" supplement >€47k;
-                  home charging ≈ 0.18€/km†
+                  VED €0 (first year), €435 "luxury EV" supplement >€47k; home
+                  charging ≈ 0.18€/km†
                 </td>
               </tr>
               <tr>
@@ -1595,6 +1602,9 @@
               if (typeof imageUrl === "string" && imageUrl.startsWith("http")) {
                 locationImage.src = imageUrl;
                 locationImage.style.display = "block";
+
+                // Save the custom location and image URL
+                saveCustomLocation(location, imageUrl);
               } else {
                 throw new Error("Invalid image URL format");
               }
@@ -1613,34 +1623,58 @@
           }
         });
 
-        // Allow pressing Enter to submit
-        locationInput.addEventListener("keyup", function (event) {
-          if (event.key === "Enter") {
-            submitLocationBtn.click();
+        // Function to save custom location and image URL
+        function saveCustomLocation(location, imageUrl) {
+          // Get existing saved locations from localStorage or initialize empty array
+          const savedLocations = JSON.parse(
+            localStorage.getItem("customLocations") || "[]"
+          );
+
+          // Check if this location already exists
+          const exists = savedLocations.some(
+            (item) => item.location.toLowerCase() === location.toLowerCase()
+          );
+
+          if (!exists) {
+            // Add new location to the array
+            savedLocations.push({ location, imageUrl });
+
+            // Save back to localStorage
+            localStorage.setItem(
+              "customLocations",
+              JSON.stringify(savedLocations)
+            );
+
+            // Add to UI
+            addLocationButton(location, imageUrl);
           }
-        });
+        }
 
-        // Handle predefined location buttons
-        const locationButtons = document.querySelectorAll(".location-btn");
+        // Function to add a location button to the UI
+        function addLocationButton(location, imageUrl) {
+          const locationButtons = document.querySelector(".location-buttons");
 
-        locationButtons.forEach((button) => {
-          button.addEventListener("click", function () {
+          // Create new button
+          const newButton = document.createElement("button");
+          newButton.className = "location-btn";
+          newButton.setAttribute("data-image", imageUrl);
+          newButton.textContent = location;
+
+          // Add event listener
+          newButton.addEventListener("click", function () {
             // Remove active class from all buttons
-            locationButtons.forEach((btn) => btn.classList.remove("active"));
+            document
+              .querySelectorAll(".location-btn")
+              .forEach((btn) => btn.classList.remove("active"));
 
-            // Add active class to clicked button
+            // Add active class to this button
             this.classList.add("active");
-
-            // Get the image URL from the data attribute
-            const imageUrl = this.getAttribute("data-image");
-
-            // Hide spinner, error and show image
-            spinner.style.display = "none";
-            errorMsg.style.display = "none";
 
             // Set the image source and display it
             locationImage.src = imageUrl;
             locationImage.style.display = "block";
+            spinner.style.display = "none";
+            errorMsg.style.display = "none";
 
             // Scroll to the image
             locationImage.scrollIntoView({
@@ -1648,7 +1682,70 @@
               block: "center",
             });
           });
+
+          // Add to DOM
+          locationButtons.appendChild(newButton);
+        }
+
+        // Load saved locations when page loads
+        function loadSavedLocations() {
+          const savedLocations = JSON.parse(
+            localStorage.getItem("customLocations") || "[]"
+          );
+
+          savedLocations.forEach((item) => {
+            addLocationButton(item.location, item.imageUrl);
+          });
+        }
+
+        // Call this function on page load
+        loadSavedLocations();
+
+        // Allow pressing Enter to submit
+        locationInput.addEventListener("keyup", function (event) {
+          if (event.key === "Enter") {
+            submitLocationBtn.click();
+          }
         });
+
+        // Handle location buttons (both predefined and custom)
+        function setupLocationButtons() {
+          // Use event delegation for all location buttons
+          document
+            .querySelector(".location-buttons")
+            .addEventListener("click", function (event) {
+              // Check if a location button was clicked
+              if (event.target.classList.contains("location-btn")) {
+                // Remove active class from all buttons
+                document
+                  .querySelectorAll(".location-btn")
+                  .forEach((btn) => btn.classList.remove("active"));
+
+                // Add active class to clicked button
+                event.target.classList.add("active");
+
+                // Get the image URL from the data attribute
+                const imageUrl = event.target.getAttribute("data-image");
+
+                // Hide spinner, error and show image
+                spinner.style.display = "none";
+                errorMsg.style.display = "none";
+
+                // Set the image source and display it
+                locationImage.src = imageUrl;
+                locationImage.style.display = "block";
+
+                // Scroll to the image
+                locationImage.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }
+            });
+        }
+
+        // Set up the location buttons
+        setupLocationButtons();
 
         // Theme toggling
         themeToggle.addEventListener("click", function () {
