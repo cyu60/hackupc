@@ -20,6 +20,10 @@ export default {
 		},
 		extend: {
 			colors: {
+				skyscannerDark: '#01294D',     // deep navy
+				skyscannerBlue: '#00A3E0',     // vibrant primary
+				skyLight: '#E6F7FF',           // light blue for highlights
+				eegPulse: '#00CFFF',           // glow accent for brain UI
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

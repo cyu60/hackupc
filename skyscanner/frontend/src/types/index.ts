@@ -53,9 +53,10 @@ export interface EEGMessage {
 
 export interface City {
   name: string;
-  images: string[];
-  vibe: string;
+  images?: string[];
+  vibe?: string;
   liked?: boolean;
+  country?: string;
 }
 
 export interface Friend {
