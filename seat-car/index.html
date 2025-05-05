@@ -964,6 +964,188 @@
           align-items: stretch;
         }
       }
+
+      /* Chat interface styling */
+      .chat-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background-color: var(--light-surface);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      body.dark-mode .chat-container {
+        background-color: var(--dark-surface);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .chat-messages {
+        padding: 1.5rem;
+        max-height: 400px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .chat-message {
+        display: flex;
+        flex-direction: column;
+        max-width: 80%;
+      }
+
+      .chat-message.user {
+        align-self: flex-end;
+      }
+
+      .chat-message.assistant {
+        align-self: flex-start;
+      }
+
+      .message-content {
+        padding: 0.8rem 1rem;
+        border-radius: 18px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+
+      .chat-message.user .message-content {
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        border-radius: 18px 18px 0 18px;
+      }
+
+      .chat-message.assistant .message-content {
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: 18px 18px 18px 0;
+      }
+
+      body.dark-mode .chat-message.assistant .message-content {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .message-image {
+        max-width: 100%;
+        border-radius: 10px;
+        margin-top: 0.5rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .message-image:hover {
+        transform: scale(1.02);
+      }
+
+      .chat-input-container {
+        display: flex;
+        padding: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      body.dark-mode .chat-input-container {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .chat-input {
+        flex: 1;
+        padding: 0.8rem 1rem;
+        border: none;
+        border-radius: 25px;
+        background-color: rgba(0, 0, 0, 0.05);
+        font-family: inherit;
+        font-size: 0.95rem;
+      }
+
+      body.dark-mode .chat-input {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--dark-text);
+      }
+
+      .chat-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.3);
+      }
+
+      .chat-send-btn {
+        background: linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-left: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .chat-send-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .chat-message-typing {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.5rem 1rem;
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: 18px;
+        width: fit-content;
+        align-self: flex-start;
+      }
+
+      body.dark-mode .chat-message-typing {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        animation: typing 1.5s infinite ease-in-out;
+      }
+
+      body.dark-mode .typing-dot {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .typing-dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.3s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      @keyframes typing {
+        0%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-5px);
+        }
+      }
     </style>
   </head>
   <body>
@@ -995,7 +1177,7 @@
         class="visualize-btn"
         id="visualize-btn"
         data-model="tavascan"
-        href="https://my.spline.design/carexport-HIQe93O0mHXrmFMblxMdx4rP/"
+        href="https://my.spline.design/carexportcopy-sTnQYRwM8i2hAH78LNtpmycE/"
         target="_blank"
         style="text-decoration: none"
       >
@@ -1007,6 +1189,7 @@
       <div class="nav-links">
         <a href="#overview" class="nav-link active">Overview</a>
         <a href="#specs" class="nav-link">Specs</a>
+        <a href="#chat" class="nav-link">Chat</a>
         <a href="#compare" class="nav-link">Compare</a>
         <a href="#visualize" class="nav-link">Visualize</a>
       </div>
@@ -1032,8 +1215,8 @@
         <h2 class="section-title">Specifications</h2>
         <div class="specs-grid">
           <div class="spec-card">
-            <div class="spec-value">340 HP</div>
-            <div class="spec-title">Horsepower</div>
+            <div class="spec-value">250 kW (340 PS)</div>
+            <div class="spec-title">Power</div>
           </div>
           <div class="spec-card">
             <div class="spec-value">545 Nm</div>
@@ -1044,7 +1227,7 @@
             <div class="spec-title">0-100 km/h</div>
           </div>
           <div class="spec-card">
-            <div class="spec-value">517 km</div>
+            <div class="spec-value">550 km</div>
             <div class="spec-title">Range (WLTP)</div>
           </div>
           <div class="spec-card">
@@ -1052,8 +1235,8 @@
             <div class="spec-title">Top Speed</div>
           </div>
           <div class="spec-card">
-            <div class="spec-value">AWD/RWD</div>
-            <div class="spec-title">Drive Options</div>
+            <div class="spec-value">Dual-motor AWD</div>
+            <div class="spec-title">Drive</div>
           </div>
           <div class="spec-card">
             <div class="spec-value">77 kWh</div>
@@ -1225,6 +1408,34 @@
         </div>
       </div>
 
+      <div id="chat" class="section">
+        <h2 class="section-title">Chat with CUPRA Assistant</h2>
+        <p>Have questions about the CUPRA Tavascan? Ask our AI assistant.</p>
+
+        <div class="chat-container">
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-message assistant">
+              <div class="message-content">
+                Hello! I'm your CUPRA assistant. How can I help you with the
+                Tavascan?
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-container">
+            <input
+              type="text"
+              id="chat-input"
+              class="chat-input"
+              placeholder="Ask something about the Tavascan..."
+            />
+            <button id="chat-send" class="chat-send-btn">
+              <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div id="compare" class="section">
         <h2 class="section-title">Comparison</h2>
 
@@ -1316,7 +1527,7 @@
                 <td>Energy / fuel</td>
                 <td>Petrol; WLTP combined 47-50 mpg (≈ 5.7-6.0 l/100 km)</td>
                 <td>
-                  77 kWh usable battery; WLTP range <strong>521 km</strong> (324
+                  77 kWh usable battery; WLTP range <strong>550 km</strong> (342
                   mi)
                 </td>
               </tr>
@@ -1347,7 +1558,8 @@
                   CONNECT app
                 </td>
                 <td>
-                  15" central display + AR head-up + My CUPRA app, OTA updates
+                  <strong>15"</strong> central display + AR head-up + My CUPRA
+                  app, OTA updates
                 </td>
               </tr>
               <tr>
@@ -2006,6 +2218,162 @@
             if (modelId) {
               openFullscreenModel(modelId);
             }
+          }
+        });
+
+        // Chat functionality
+        const chatInput = document.getElementById("chat-input");
+        const chatSendBtn = document.getElementById("chat-send");
+        const chatMessages = document.getElementById("chat-messages");
+
+        // Function to add a message to the chat
+        function addChatMessage(content, sender, imageUrl = null) {
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("chat-message", sender);
+
+          const messageContent = document.createElement("div");
+          messageContent.classList.add("message-content");
+          messageContent.textContent = content;
+          messageDiv.appendChild(messageContent);
+
+          // Add image if provided
+          if (imageUrl) {
+            const messageImage = document.createElement("img");
+            messageImage.classList.add("message-image");
+            messageImage.src = imageUrl;
+            messageImage.alt = "CUPRA Tavascan information";
+            messageImage.loading = "lazy";
+            messageDiv.appendChild(messageImage);
+
+            // Make image clickable to view larger version
+            messageImage.addEventListener("click", function () {
+              const lightbox = document.createElement("div");
+              lightbox.style.position = "fixed";
+              lightbox.style.top = "0";
+              lightbox.style.left = "0";
+              lightbox.style.width = "100%";
+              lightbox.style.height = "100%";
+              lightbox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+              lightbox.style.display = "flex";
+              lightbox.style.alignItems = "center";
+              lightbox.style.justifyContent = "center";
+              lightbox.style.zIndex = "9999";
+
+              const lightboxImg = document.createElement("img");
+              lightboxImg.src = imageUrl;
+              lightboxImg.style.maxWidth = "90%";
+              lightboxImg.style.maxHeight = "90%";
+              lightboxImg.style.objectFit = "contain";
+
+              lightbox.appendChild(lightboxImg);
+              document.body.appendChild(lightbox);
+
+              lightbox.addEventListener("click", function () {
+                document.body.removeChild(lightbox);
+              });
+            });
+          }
+
+          chatMessages.appendChild(messageDiv);
+
+          // Scroll to the bottom
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Function to show typing indicator
+        function showTypingIndicator() {
+          const typingDiv = document.createElement("div");
+          typingDiv.classList.add("chat-message-typing");
+          typingDiv.id = "typing-indicator";
+
+          for (let i = 0; i < 3; i++) {
+            const dot = document.createElement("div");
+            dot.classList.add("typing-dot");
+            typingDiv.appendChild(dot);
+          }
+
+          chatMessages.appendChild(typingDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          return typingDiv;
+        }
+
+        // Function to remove typing indicator
+        function removeTypingIndicator() {
+          const typingIndicator = document.getElementById("typing-indicator");
+          if (typingIndicator) {
+            chatMessages.removeChild(typingIndicator);
+          }
+        }
+
+        // Function to handle chat submission
+        async function handleChatSubmit() {
+          const message = chatInput.value.trim();
+
+          if (!message) return;
+
+          // Add user message to chat
+          addChatMessage(message, "user");
+
+          // Clear input field
+          chatInput.value = "";
+
+          // Show typing indicator
+          showTypingIndicator();
+
+          try {
+            // Make API request
+            const url =
+              "https://magicloops.dev/api/loop/b7b63cc4-b061-4f97-bce5-ddf56d943a6b/run";
+
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ query: message }),
+            });
+
+            const responseJson = await response.json();
+            console.log(responseJson);
+
+            // Remove typing indicator
+            removeTypingIndicator();
+
+            // Process the response - direct object with response and imageUrl fields
+            if (responseJson && responseJson.response) {
+              addChatMessage(
+                responseJson.response,
+                "assistant",
+                responseJson.imageUrl
+              );
+            } else {
+              // Fallback response if the API doesn't return expected format
+              addChatMessage(
+                "I'm sorry, I couldn't process your request at the moment. Please try again later.",
+                "assistant"
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+
+            // Remove typing indicator
+            removeTypingIndicator();
+
+            // Show error message
+            addChatMessage(
+              "I'm sorry, there was an error processing your request. Please try again later.",
+              "assistant"
+            );
+          }
+        }
+
+        // Event listeners for chat
+        chatSendBtn.addEventListener("click", handleChatSubmit);
+
+        chatInput.addEventListener("keypress", function (event) {
+          if (event.key === "Enter") {
+            handleChatSubmit();
           }
         });
       });
